@@ -12,6 +12,12 @@ P0 foundation for the six-week Ethiopian marketing and media tender pilot, based
 
 Checks: `npm test`, `npm run typecheck`, `npm run build`.
 
+### Company profile editing migration
+
+After the three foundation migrations (or `bootstrap.sql`), apply `supabase/migrations/202610190004_profile_editing.sql` once through the Supabase SQL Editor or authenticated migration tooling. The bootstrap still contains only the original three migrations. This incremental migration adds owner-only profile editing, optimistic version checks, tenant-scoped immutable declaration history, and audit events. Existing profiles receive a starting snapshot; new companies receive their initial snapshot automatically. Every edited profile invalidates earlier assessments through their existing profile-version comparison. No database credentials or remote schema changes are performed by the application build.
+
+Before enabling editing for customers, validate with separate owner, bid-officer and unrelated-company sessions: only the active owner can save; revoked members cannot read history or save; saving from an old tab fails rather than overwriting a newer version; an unchanged save creates no extra version; old assessments require acknowledgement after an edit. These database acceptance checks require an initialized test database and have not yet been executed in this workspace.
+
 ## Implemented foundation
 
 - Email-link sign-in, company creation with structured service/region declarations, published notice search and filtering, original source evidence, deadline display in Africa/Addis_Ababa, assessment matrix, and saved-bid decisions.
@@ -30,7 +36,7 @@ Never use a service-role key in the browser. No staff role receives tenant-wide 
 
 ## Remaining P0 work and release gates
 
-- Company fact/evidence version editing and dependency invalidation; two-seat owner invitation/revocation UI and server limits; pilot enrollment limit.
+- Structured company facts and evidence references beyond services/regions; two-seat owner invitation/revocation UI and server limits; pilot enrollment limit. Basic owner profile editing and version history are implemented in migration 004, pending database acceptance checks.
 - Source registry management, review queue, provenance reconciliation, corrections/retractions and transactional amendment-to-outbox writes.
 - Assessment authoring, requirement version and dependency tables, conditional/compound requirements, relevance feedback, and selected-lot assessment UI.
 - Approved versioned service/holiday calendar, monitoring rounds and overdue escalation, deterministic reminder/catch-up planner.
